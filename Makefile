@@ -1,32 +1,26 @@
-CONTAINER_NAME=xxx.azurecr.io/admission-review/delete-validation-webhook
-CONTAINER_VERSION=1.2
+CONTAINER_NAME=delete-validation-webhook
+CONTAINER_VERSION=1.0
 WEBHOOK_NAMESPACE=default
 WEBHOOK_SERVICE_NAME=k8s-delete-validation-webhook
 WEBHOOK_IMAGE=$(CONTAINER_NAME):$(CONTAINER_VERSION)
 
-
-
-fmt:
-	go fmt ./internal/k8s-delete-validation--webhook/
-
-vet:
-	go vet ./internal/k8s-delete-validation-webhook/
-
+.PHONY: build
 test:
-	go test ./internal/k8s-delete-validation-webhook/ -v
+	go test ./ -v
 
+.PHONY: build
 build: 
-	cd internal/k8s-delete-validation-webhook/ && glide install -v &&  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o k8s-delete-validation-webhook.bin 
 
 # go build done using multistage container build
 docker-build:
-	docker build -t $(CONTAINER_NAME):$(CONTAINER_VERSION) -f build/Dockerfile .
+	docker build --no-cache -t $(CONTAINER_NAME):$(CONTAINER_VERSION) -f build/Dockerfile .
 
 # go build done locally and copied into container image
 # debugging with vscode squash extension or squashctl only seems to work with the local build
 docker-build-local:
-	cd internal/k8s-delete-validation-webhook/ && glide install -v &&  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o k8s-delete-validation-webhook
-	docker build -t $(CONTAINER_NAME):$(CONTAINER_VERSION) -f build/Dockerfile-local-go-build .
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o k8s-delete-validation-webhooki.bin
+	docker build --no-cache -t $(CONTAINER_NAME):$(CONTAINER_VERSION) -f build/local.Dockerfile .
 
 docker-push:
 	docker push $(CONTAINER_NAME):$(CONTAINER_VERSION)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -102,7 +103,7 @@ func getResourceLabels(clientSet *kubernetes.Clientset, ar v1beta1.AdmissionRevi
 		resourceAPIRequest = fmt.Sprintf("api/%s/namespaces/%s/%s/%s", ar.Request.Kind.Version, ar.Request.Namespace, ar.Request.Resource.Resource, ar.Request.Name)
 	}
 
-	jsonData, err := clientSet.RESTClient().Get().AbsPath(resourceAPIRequest).DoRaw()
+	jsonData, err := clientSet.RESTClient().Get().AbsPath(resourceAPIRequest).DoRaw(context.Background())
 	var resourceData ResourceData
 
 	if err != nil {
