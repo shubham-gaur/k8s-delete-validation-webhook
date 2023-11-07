@@ -45,7 +45,7 @@ For Configured Kubernetes namespaces and resources (deployments, crds etc) delet
   ```
 * Apply the yaml
   ```sh
-  kubectl apply -f deployments/webhook-k8s-resources.yaml
+  kubectl apply -f yamls/webhook-k8s-resources.yaml
   ```
 
 ## Verify installation
